@@ -1,0 +1,9 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Cliente" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="co.edu.uniquindio.programacion3.taller_sockets.AppCliente" />
+    <module name="taller_sockets" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
