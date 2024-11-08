@@ -12,15 +12,37 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 public class Pedido {
-    private List<Producto> productos;
+    private List<Producto> productos = new ArrayList<>();;
     private String cliente;
     private boolean listo;
 
     // Constructor
     public Pedido(String cliente) {
         this.cliente = cliente;
-        this.productos = new ArrayList<>();
         this.listo = false;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder factura = new StringBuilder();
+        factura.append("**********************\n");
+        factura.append("     FACTURA DE PEDIDO\n");
+        factura.append("**********************\n");
+        factura.append("Cliente: ").append(cliente).append("\n\n");
+        factura.append("Productos:\n");
+
+        double total = 0;
+        for (Producto producto : productos) {
+            factura.append("- ").append(producto.nombre())
+                    .append(" | Precio: $").append(producto.precio()).append("\n");
+            total += producto.precio();
+        }
+
+        factura.append("\nTotal: $").append(total).append("\n");
+        factura.append("Estado: ").append(listo ? "Listo para entrega" : "En preparación").append("\n");
+        factura.append("**********************");
+
+        return factura.toString();
     }
 
 }

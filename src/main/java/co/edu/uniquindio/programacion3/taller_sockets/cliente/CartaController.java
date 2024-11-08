@@ -5,6 +5,7 @@ import co.edu.uniquindio.programacion3.taller_sockets.dto.Producto;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.layout.AnchorPane;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -15,6 +16,14 @@ public class CartaController {
     private final Cliente appCliente = new Cliente("localhost", 8085);
     private List<Producto> menu;
 
+    @FXML
+    private TextField txtNombreCliente;
+
+    @FXML
+    private AnchorPane panel1;
+
+    @FXML
+    private AnchorPane panel2;
 
     @FXML
     private TextField txtCantidadProducto;
@@ -29,6 +38,15 @@ public class CartaController {
     private TextArea txtaFactura;
 
     @FXML
+    void ingresarAction() {
+        if (!txtNombreCliente.getText().isEmpty()) {
+            ViewTools.cambiarPantalla(panel2, 0.25, panel1);
+            lbNombreCliente.setText(txtNombreCliente.getText());
+        }
+    }
+
+
+    @FXML
     void ActionHacerPedido() {
 
         String[] StringPedido = cbxCartaProducto.getValue().split(":");
@@ -38,9 +56,14 @@ public class CartaController {
             if (producto.nombre().equals(StringPedido[0])) {
                 try {
                     pedidoDto = new PedidoDto(producto,
-                            "Jorge",
+                            txtNombreCliente.getText(),
                             Integer.parseInt(txtCantidadProducto.getText()));
 
+                    if (txtaFactura.getText().isEmpty()) {
+                        txtaFactura.setText("... Preparando pedido") ;
+                    } else {
+                        txtaFactura.setText("... Actualizando pedido");
+                    }
                     appCliente.hacerPedido(pedidoDto);
 
                 } catch (NumberFormatException ignore) {
@@ -54,11 +77,6 @@ public class CartaController {
 
         assert pedidoDto != null;
         System.out.println(pedidoDto.toString());
-
-    }
-
-    @FXML
-    void ActionPagar() {
 
     }
 
@@ -106,4 +124,12 @@ public class CartaController {
         return lista;
     }
 
+    public void actualizarMsj(String msj) {
+        Platform.runLater(() -> {
+            if (msj != null && !msj.isEmpty()) {
+                txtaFactura.setText("");
+                txtaFactura.setText(msj);
+            }
+        });
+    }
 }

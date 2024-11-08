@@ -7,9 +7,7 @@ import javafx.scene.control.Alert;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.net.Socket;
 import java.util.List;
 
@@ -23,6 +21,7 @@ public class Cliente {
     Socket socketComunicacion;
     ObjectInputStream flujoEntradaObjeto;
     ObjectOutputStream flujoSalidaObjeto;
+    DataInputStream msjEntrada;
 
     // Logica del negocio
     private CartaController cartaController;
@@ -41,10 +40,12 @@ public class Cliente {
                 crearConexion();
                 flujoSalidaObjeto = new ObjectOutputStream(socketComunicacion.getOutputStream());
                 flujoEntradaObjeto = new ObjectInputStream(socketComunicacion.getInputStream());
+                msjEntrada = new DataInputStream(socketComunicacion.getInputStream());
+
 
                 recibirCarta();
+                recibirMsj();
 
-                // Ahora el cliente puede seguir interactuando sin cerrar los flujos
             } catch (IOException | ClassNotFoundException e) {
                 ViewTools.mostrarMensaje("¡Error de conexión!", "No se ha podido conectar con el servidor",
                         "Asegúrate de que el servidor está disponible.", Alert.AlertType.ERROR);
@@ -54,12 +55,32 @@ public class Cliente {
     }
 
 
+
+    private void recibirMsj() {
+        Thread hiloMsj = new Thread(() -> {
+            try {
+                while (true) {
+                    String msj = msjEntrada.readUTF();
+                    Platform.runLater(() -> {
+                        cartaController.actualizarMsj(msj);
+                    });
+                }
+            } catch (IOException e) {
+                System.err.println("Error al recibir mensajes del servidor: " + e.getMessage());
+            }
+        });
+        hiloMsj.setDaemon(true);
+        hiloMsj.start();
+    }
+
+
     @SuppressWarnings("unchecked")
     private void recibirCarta() throws IOException, ClassNotFoundException {
-        System.out.println("Esperando carta...");
+        System.out.println("... esperando carta.");
         List<Producto> carta = (List<Producto>) flujoEntradaObjeto.readObject();
 
         Platform.runLater(() -> {
+            System.out.println("... carta resivida.");
             this.carta = carta;
             cartaController.actualizarComboBox(carta);
         });
@@ -67,7 +88,7 @@ public class Cliente {
 
     private void crearConexion() throws IOException {
         socketComunicacion = new Socket(host, puerto);
-        System.out.println("Conectado al servidor");
+        System.out.println("... conectado al servidor");
     }
 
 
@@ -75,7 +96,6 @@ public class Cliente {
         if (flujoSalidaObjeto != null) {
             flujoSalidaObjeto.writeObject(pedidoDto);
             flujoSalidaObjeto.flush();
-            System.out.println("pasa por aqui");
         } else {
             System.err.println("El flujo de salida no está inicializado.");
         }
