@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,7 +40,10 @@ public class Pedido {
             total += producto.precio();
         }
 
-        factura.append("\nTotal: $").append(total).append("\n");
+        BigDecimal bd = new BigDecimal(total).setScale(2, RoundingMode.HALF_UP);
+
+
+        factura.append("\nTotal: $").append(bd).append("\n");
         factura.append("Estado: ").append(listo ? "Listo para entrega" : "En preparación").append("\n");
         factura.append("**********************");
 

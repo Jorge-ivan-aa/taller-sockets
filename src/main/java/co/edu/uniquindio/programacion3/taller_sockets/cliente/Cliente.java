@@ -80,7 +80,7 @@ public class Cliente {
         List<Producto> carta = (List<Producto>) flujoEntradaObjeto.readObject();
 
         Platform.runLater(() -> {
-            System.out.println("... carta resivida.");
+            System.out.println("... carta recibida.");
             this.carta = carta;
             cartaController.actualizarComboBox(carta);
         });

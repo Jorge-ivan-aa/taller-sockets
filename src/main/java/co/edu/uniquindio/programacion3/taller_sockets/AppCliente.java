@@ -15,10 +15,6 @@ public class AppCliente extends Application {
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(AppCliente.class.getResource("carta.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 600, 400);
-
-        // Obtén el controlador generado por JavaFX
-        CartaController controller = fxmlLoader.getController();
-
         stage.setTitle("Cafetería");
         stage.setScene(scene);
         stage.show();
